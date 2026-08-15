@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>社労士 朝の5問</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1a1d21; --sub: #616770;
+    --accent: #2563eb; --accent-soft: #dbeafe; --border: #e3e6ea;
+    --ok: #16a34a; --ok-soft: #dcfce7; --ng: #dc2626; --ng-soft: #fee2e2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171a; --card: #1f2226; --text: #e8eaed; --sub: #9aa2ab;
+      --accent: #60a5fa; --accent-soft: #1e3a5f; --border: #33373d;
+      --ok: #4ade80; --ok-soft: #14331f; --ng: #f87171; --ng-soft: #3b1a1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    line-height: 1.7; padding: 16px 12px 80px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  header { margin: 8px 4px 20px; }
+  header h1 { font-size: 20px; margin: 0 0 4px; }
+  header .meta { color: var(--sub); font-size: 13px; }
+  .q {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px; margin-bottom: 16px;
+  }
+  .q .tag { display: inline-block; font-size: 12px; color: var(--accent);
+    background: var(--accent-soft); border-radius: 999px; padding: 1px 10px; margin-bottom: 8px; }
+  .q .qtext { font-size: 15px; white-space: pre-wrap; margin-bottom: 12px; }
+  .choice {
+    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+    background: none; border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; margin-bottom: 8px; font-size: 14px; color: var(--text);
+    cursor: pointer; line-height: 1.6; font-family: inherit;
+  }
+  .choice .mark { font-weight: 700; color: var(--sub); flex-shrink: 0; }
+  .choice.sel { border-color: var(--accent); background: var(--accent-soft); }
+  .choice.sel .mark { color: var(--accent); }
+  .choice.correct { border-color: var(--ok); background: var(--ok-soft); }
+  .choice.wrong { border-color: var(--ng); background: var(--ng-soft); }
+  .blank-group { margin-bottom: 14px; }
+  .blank-group .blabel { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .opt {
+    border: 1px solid var(--border); background: none; color: var(--text);
+    border-radius: 999px; padding: 6px 14px; font-size: 14px; cursor: pointer; font-family: inherit;
+  }
+  .opt.sel { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+  .opt.correct { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); font-weight: 700; }
+  .opt.wrong { border-color: var(--ng); background: var(--ng-soft); color: var(--ng); }
+  .result-banner { font-size: 15px; font-weight: 700; border-radius: 10px; padding: 10px 14px; margin-top: 12px; display: none; }
+  .result-banner.ok { display: block; background: var(--ok-soft); color: var(--ok); }
+  .result-banner.ng { display: block; background: var(--ng-soft); color: var(--ng); }
+  .expl { display: none; margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 12px; font-size: 14px; }
+  .expl .ref a { color: var(--accent); word-break: break-all; }
+  .memo { color: var(--sub); font-size: 13px; }
+  #gradeBtn {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: 20px;
+    background: var(--accent); color: #fff; border: none; border-radius: 999px;
+    font-size: 16px; font-weight: 700; padding: 14px 42px; cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0,0,0,.25); font-family: inherit;
+  }
+  #gradeBtn:disabled { opacity: .5; }
+  #summary {
+    display: none; background: var(--card); border: 2px solid var(--accent);
+    border-radius: 14px; padding: 18px; margin: 20px 0;
+  }
+  #summary h2 { margin: 0 0 8px; font-size: 18px; }
+  #summary .score { font-size: 32px; font-weight: 800; color: var(--accent); }
+  #summary .record { margin-top: 12px; font-size: 14px; }
+  #summary .emojis { font-size: 26px; letter-spacing: 4px; margin: 6px 0; }
+  #copyBtn {
+    margin-top: 8px; border: 1px solid var(--accent); color: var(--accent); background: none;
+    border-radius: 8px; padding: 8px 16px; font-size: 14px; cursor: pointer; font-family: inherit;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>☀️ 社労士 朝の5問</h1>
+    <div class="meta" id="dateMeta"></div>
+  </header>
+  <div id="quiz"></div>
+  <div id="summary">
+    <h2>採点結果</h2>
+    <div class="score" id="scoreText"></div>
+    <div class="record" id="recordGuide"></div>
+    <button id="copyBtn">結果テキストをコピー</button>
+  </div>
+</div>
+<button id="gradeBtn" disabled>採点する</button>
+<script>
+const QUIZ = {
+  "date": "2026-08-15",
+  "weekday": "土",
+  "questions": [
+    {
+      "no": 1, "subject": "労働基準法", "type": "single",
+      "text": "解雇の予告に関する次の記述のうち、正しいものはどれか。",
+      "choices": [
+        "使用者は、労働者を解雇しようとする場合、少なくとも14日前にその予告をしなければならない。",
+        "30日前に予告をしない使用者は、30日分以上の平均賃金を支払わなければならない。",
+        "解雇の予告日数は、1日について平均賃金を支払った場合でも短縮することができない。",
+        "天災事変その他やむを得ない事由により事業の継続が不可能となった場合でも、解雇の予告は省略できない。",
+        "労働者の責に帰すべき事由に基づいて解雇する場合でも、必ず30日前の予告が必要である。"
+      ],
+      "answer": 1,
+      "explanation": "使用者は少なくとも「30日前」に予告が必要で、予告しない場合は30日分以上の平均賃金（解雇予告手当）を支払う。予告日数は平均賃金を支払った日数分短縮できる（Cは誤り）。天災事変等で事業継続が不可能な場合・労働者の責に帰すべき事由による場合は例外（D・Eは誤り）。Aは「14日」が誤り。\n📌 「30日前 or 30日分以上の平均賃金」。支払った日数だけ短縮可。",
+      "ref": { "label": "労基法20条", "url": "https://laws.e-gov.go.jp/law/322AC0000000049" }
+    },
+    {
+      "no": 2, "subject": "健康保険法", "type": "single",
+      "text": "健康保険の被保険者（任意継続被保険者を除く）の資格取得の時期として、正しいものはどれか。",
+      "choices": [
+        "適用事業所に使用されるに至った日の翌日",
+        "事業主が被保険者資格取得届を提出した日",
+        "適用事業所に使用されるに至った日",
+        "使用されるに至った月の初日",
+        "保険者等が資格取得を確認した日"
+      ],
+      "answer": 2,
+      "explanation": "被保険者は「適用事業所に使用されるに至った日」から資格を取得する（条文どおり）。届出や確認の日ではない点に注意。",
+      "ref": { "label": "健保法35条", "url": "https://laws.e-gov.go.jp/law/211AC0000000070" }
+    },
+    {
+      "no": 3, "subject": "国民年金法", "type": "single",
+      "text": "国民年金の被保険者に関する次の記述のうち、誤っているものはどれか。",
+      "choices": [
+        "日本国内に住所を有する20歳以上60歳未満の者で、第2号・第3号被保険者に該当しないものは、原則として第1号被保険者となる。",
+        "厚生年金保険の被保険者は、原則として第2号被保険者となる。",
+        "第3号被保険者は、第2号被保険者の配偶者で主として第2号被保険者の収入により生計を維持する20歳以上60歳未満の者である。",
+        "第3号被保険者となるには、原則として日本国内に住所を有することが必要である。",
+        "第1号被保険者となるには、日本国籍を有していることが必要である。"
+      ],
+      "answer": 4,
+      "explanation": "第1号被保険者に国籍要件はない（国内居住＋20歳以上60歳未満が基本）。A・Bは条文どおり。Cは正しい（厳密には国内居住等の要件が配偶者側にも付く）。Dは令和2年改正で追加された国内居住要件で正しい。\n📌 1号=国内住所・20〜60歳／2号=厚年被保険者／3号=2号の被扶養配偶者20〜60歳。国籍要件はどれにもなし。",
+      "ref": { "label": "国年法7条", "url": "https://laws.e-gov.go.jp/law/334AC0000000141" }
+    },
+    {
+      "no": 4, "subject": "厚生年金保険法", "type": "single",
+      "text": "厚生年金保険の被保険者に関する次の記述のうち、正しいものはどれか。",
+      "choices": [
+        "適用事業所に使用される65歳未満の者は、被保険者となる。",
+        "適用事業所に使用される70歳未満の者は、被保険者となる。",
+        "適用事業所に使用される75歳未満の者は、被保険者となる。",
+        "適用事業所に使用される者のうち、20歳以上の者に限り被保険者となる。",
+        "国民年金の第1号被保険者は、厚生年金保険の被保険者となることができない。"
+      ],
+      "answer": 1,
+      "explanation": "「適用事業所に使用される70歳未満の者」が被保険者（年齢の下限はない。20歳未満でも使用されれば被保険者）。厚年被保険者は国民年金の第2号被保険者になる関係。\n📌 厚年は「70歳未満」・健保は「75歳到達で後期高齢者医療へ」— 年齢の横断整理が頻出。",
+      "ref": { "label": "厚年法9条", "url": "https://laws.e-gov.go.jp/law/329AC0000000115" }
+    },
+    {
+      "no": 5, "subject": "労働基準法", "type": "fill",
+      "text": "次の文中の空欄に入る語句を語群から選べ。\n「労働条件は、労働者が【 A 】に値する生活を営むための必要を充たすべきものでなければならない。」\n「この法律で定める労働条件の基準は【 B 】のものであるから、労働関係の当事者は、この基準を理由として労働条件を【 C 】させてはならないことはもとより、その【 D 】を図るように努めなければならない。」",
+      "options": ["人たる", "勤労者たる", "最低", "標準", "低下", "変更", "向上", "改善"],
+      "blanks": [
+        { "label": "A", "answer": 0 },
+        { "label": "B", "answer": 2 },
+        { "label": "C", "answer": 4 },
+        { "label": "D", "answer": 6 }
+      ],
+      "explanation": "労基法1条（労働条件の原則）の目的条文。「人たるに値する生活」「基準は最低のもの」「低下させてはならない」「向上を図るよう努める」— 選択式の超頻出条文なので一言一句レベルで押さえる。",
+      "ref": { "label": "労基法1条", "url": "https://laws.e-gov.go.jp/law/322AC0000000049" }
+    }
+  ]
+};
+
+const NUM_EMOJI = ["1️⃣","2️⃣","3️⃣","4️⃣","5️⃣"];
+const state = {};
+document.getElementById('dateMeta').textContent = `${QUIZ.date}（${QUIZ.weekday}）｜ 解き終わったら下の「採点する」をタップ`;
+
+const quizEl = document.getElementById('quiz');
+QUIZ.questions.forEach(q => {
+  const card = document.createElement('div');
+  card.className = 'q'; card.id = 'q' + q.no;
+  let inner = `<span class="tag">問${q.no}｜${q.subject}${q.type==='fill'?'（選択式）':'（択一式）'}</span>`;
+  inner += `<div class="qtext">${q.text}</div>`;
+  if (q.type === 'single') {
+    q.choices.forEach((c, i) => {
+      const m = String.fromCharCode(65 + i);
+      inner += `<button class="choice" data-q="${q.no}" data-i="${i}"><span class="mark">${m}</span><span>${c}</span></button>`;
+    });
+  } else {
+    q.blanks.forEach((b, bi) => {
+      inner += `<div class="blank-group"><div class="blabel">【 ${b.label} 】</div><div class="opts">`;
+      q.options.forEach((o, oi) => {
+        inner += `<button class="opt" data-q="${q.no}" data-b="${bi}" data-i="${oi}">${'①②③④⑤⑥⑦⑧⑨⑩'[oi]}${o}</button>`;
+      });
+      inner += `</div></div>`;
+    });
+  }
+  inner += `<div class="result-banner" id="banner${q.no}"></div>`;
+  inner += `<div class="expl" id="expl${q.no}"></div>`;
+  card.innerHTML = inner;
+  quizEl.appendChild(card);
+  state[q.no] = q.type === 'single' ? null : new Array(q.blanks.length).fill(null);
+});
+
+let graded = false;
+quizEl.addEventListener('click', e => {
+  if (graded) return;
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const qno = parseInt(btn.dataset.q);
+  if (btn.classList.contains('choice')) {
+    document.querySelectorAll(`.choice[data-q="${qno}"]`).forEach(el => el.classList.remove('sel'));
+    btn.classList.add('sel');
+    state[qno] = parseInt(btn.dataset.i);
+  } else if (btn.classList.contains('opt')) {
+    const bi = parseInt(btn.dataset.b);
+    document.querySelectorAll(`.opt[data-q="${qno}"][data-b="${bi}"]`).forEach(el => el.classList.remove('sel'));
+    btn.classList.add('sel');
+    state[qno][bi] = parseInt(btn.dataset.i);
+  }
+  updateBtn();
+});
+
+function allAnswered() {
+  return QUIZ.questions.every(q =>
+    q.type === 'single' ? state[q.no] !== null : state[q.no].every(v => v !== null));
+}
+function updateBtn() {
+  const b = document.getElementById('gradeBtn');
+  b.disabled = !allAnswered();
+  b.textContent = allAnswered() ? '採点する' : '採点する（未回答あり）';
+}
+updateBtn();
+
+document.getElementById('gradeBtn').addEventListener('click', () => {
+  if (graded || !allAnswered()) return;
+  graded = true;
+  const results = [];
+  QUIZ.questions.forEach(q => {
+    let ok;
+    if (q.type === 'single') {
+      ok = state[q.no] === q.answer;
+      document.querySelectorAll(`.choice[data-q="${q.no}"]`).forEach(el => {
+        const i = parseInt(el.dataset.i);
+        if (i === q.answer) el.classList.add('correct');
+        else if (i === state[q.no]) el.classList.add('wrong');
+      });
+    } else {
+      ok = q.blanks.every((b, bi) => state[q.no][bi] === b.answer);
+      q.blanks.forEach((b, bi) => {
+        document.querySelectorAll(`.opt[data-q="${q.no}"][data-b="${bi}"]`).forEach(el => {
+          const i = parseInt(el.dataset.i);
+          if (i === b.answer) el.classList.add('correct');
+          else if (i === state[q.no][bi]) el.classList.add('wrong');
+        });
+      });
+    }
+    results.push(ok);
+    const banner = document.getElementById('banner' + q.no);
+    banner.textContent = ok ? '⭕ 正解！' : '❌ 不正解';
+    banner.className = 'result-banner ' + (ok ? 'ok' : 'ng');
+    const ex = document.getElementById('expl' + q.no);
+    ex.style.display = 'block';
+    ex.innerHTML = `<div style="white-space:pre-wrap">${q.explanation}</div><div class="ref">根拠：<a href="${q.ref.url}" target="_blank" rel="noopener">${q.ref.label}</a></div>`;
+  });
+  const score = results.filter(Boolean).length;
+  const wrong = results.map((r, i) => r ? null : i + 1).filter(Boolean);
+  document.getElementById('scoreText').textContent = `${score} / 5`;
+  const guide = document.getElementById('recordGuide');
+  if (wrong.length === 0) {
+    guide.innerHTML = `🎉 全問正解！<br>記録のため、Slackの今日の投稿に <span class="emojis">✅</span> をリアクションしてください。`;
+  } else {
+    guide.innerHTML = `記録のため、Slackの今日の投稿に間違えた問題の絵文字をリアクションしてください：<div class="emojis">${wrong.map(n => NUM_EMOJI[n-1]).join(' ')}</div><span class="memo">（リアクションだけで翌朝自動的に採点・弱点記録されます）</span>`;
+  }
+  const resultText = `今日の結果 ${results.map((r, i) => `${i+1}${r ? '○' : '×'}`).join(' ')}`;
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(resultText).then(() => {
+      document.getElementById('copyBtn').textContent = 'コピーしました ✓';
+    });
+  });
+  document.getElementById('summary').style.display = 'block';
+  document.getElementById('gradeBtn').style.display = 'none';
+  document.getElementById('summary').scrollIntoView({ behavior: 'smooth' });
+});
+</script>
+</body>
+</html>
