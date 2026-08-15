@@ -15,12 +15,14 @@
     --bg: #f6f7f9; --card: #ffffff; --text: #1a1d21; --sub: #616770;
     --accent: #2563eb; --accent-soft: #dbeafe; --border: #e3e6ea;
     --ok: #16a34a; --ok-soft: #dcfce7; --ng: #dc2626; --ng-soft: #fee2e2;
+    --gold: #b45309; --gold-soft: #fef3c7; --xp: #7c3aed; --xp-soft: #ede9fe;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #15171a; --card: #1f2226; --text: #e8eaed; --sub: #9aa2ab;
       --accent: #60a5fa; --accent-soft: #1e3a5f; --border: #33373d;
       --ok: #4ade80; --ok-soft: #14331f; --ng: #f87171; --ng-soft: #3b1a1a;
+      --gold: #fbbf24; --gold-soft: #3a2e10; --xp: #a78bfa; --xp-soft: #2a2140;
     }
   }
   * { box-sizing: border-box; }
@@ -30,22 +32,37 @@
     line-height: 1.7; padding: 16px 12px 80px;
   }
   .wrap { max-width: 640px; margin: 0 auto; }
-  header { margin: 8px 4px 20px; }
-  header h1 { font-size: 20px; margin: 0 0 4px; }
-  header .meta { color: var(--sub); font-size: 13px; }
-  .q {
+  header { margin: 8px 4px 12px; display: flex; justify-content: space-between; align-items: center; }
+  header h1 { font-size: 20px; margin: 0; }
+  header .meta { color: var(--sub); font-size: 12px; }
+  #soundBtn { border: 1px solid var(--border); background: var(--card); color: var(--text);
+    border-radius: 999px; padding: 6px 12px; font-size: 14px; cursor: pointer; font-family: inherit; }
+  /* ステータスカード */
+  #status {
     background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    padding: 16px; margin-bottom: 16px;
+    padding: 14px 16px; margin-bottom: 16px;
   }
+  #status .toprow { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+  #status .lv { font-size: 18px; font-weight: 800; }
+  #status .streak { color: var(--gold); font-weight: 700; font-size: 14px; }
+  .xpbar { background: var(--xp-soft); border-radius: 999px; height: 12px; margin: 8px 0 4px; overflow: hidden; }
+  .xpbar .fill { background: var(--xp); height: 100%; border-radius: 999px; transition: width 1.2s ease; }
+  #status .xptext { font-size: 12px; color: var(--sub); }
+  .statchips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .statchip { font-size: 11.5px; border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; color: var(--sub); }
+  .statchip b { color: var(--text); }
+  .cursedbox { margin-top: 10px; font-size: 12.5px; color: var(--sub); background: var(--ng-soft); border-radius: 8px; padding: 6px 10px; }
+  /* 問題カード */
+  .q { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
   .q .tag { display: inline-block; font-size: 12px; color: var(--accent);
-    background: var(--accent-soft); border-radius: 999px; padding: 1px 10px; margin-bottom: 8px; }
+    background: var(--accent-soft); border-radius: 999px; padding: 1px 10px; margin-bottom: 4px; }
+  .monster { font-size: 13.5px; color: var(--sub); margin: 2px 0 10px; }
+  .monster .mname { font-weight: 700; color: var(--text); }
   .q .qtext { font-size: 15px; white-space: pre-wrap; margin-bottom: 12px; }
-  .choice {
-    display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
+  .choice { display: flex; gap: 10px; align-items: flex-start; width: 100%; text-align: left;
     background: none; border: 1px solid var(--border); border-radius: 10px;
     padding: 10px 12px; margin-bottom: 8px; font-size: 14px; color: var(--text);
-    cursor: pointer; line-height: 1.6; font-family: inherit;
-  }
+    cursor: pointer; line-height: 1.6; font-family: inherit; }
   .choice .mark { font-weight: 700; color: var(--sub); flex-shrink: 0; }
   .choice.sel { border-color: var(--accent); background: var(--accent-soft); }
   .choice.sel .mark { color: var(--accent); }
@@ -54,54 +71,56 @@
   .blank-group { margin-bottom: 14px; }
   .blank-group .blabel { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
   .opts { display: flex; flex-wrap: wrap; gap: 8px; }
-  .opt {
-    border: 1px solid var(--border); background: none; color: var(--text);
-    border-radius: 999px; padding: 6px 14px; font-size: 14px; cursor: pointer; font-family: inherit;
-  }
+  .opt { border: 1px solid var(--border); background: none; color: var(--text);
+    border-radius: 999px; padding: 6px 14px; font-size: 14px; cursor: pointer; font-family: inherit; }
   .opt.sel { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 700; }
   .opt.correct { border-color: var(--ok); background: var(--ok-soft); color: var(--ok); font-weight: 700; }
   .opt.wrong { border-color: var(--ng); background: var(--ng-soft); color: var(--ng); }
-  .result-banner { font-size: 15px; font-weight: 700; border-radius: 10px; padding: 10px 14px; margin-top: 12px; display: none; }
+  .result-banner { font-size: 14.5px; font-weight: 700; border-radius: 10px; padding: 10px 14px; margin-top: 12px; display: none; }
   .result-banner.ok { display: block; background: var(--ok-soft); color: var(--ok); }
   .result-banner.ng { display: block; background: var(--ng-soft); color: var(--ng); }
   .expl { display: none; margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 12px; font-size: 14px; }
   .expl .ref a { color: var(--accent); word-break: break-all; }
   .memo { color: var(--sub); font-size: 13px; }
-  .askBtn {
-    margin-top: 10px; border: 1px solid var(--accent); color: var(--accent); background: none;
-    border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit;
-  }
-  #gradeBtn {
-    position: fixed; left: 50%; transform: translateX(-50%); bottom: 20px;
+  .askBtn { margin-top: 10px; border: 1px solid var(--accent); color: var(--accent); background: none;
+    border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  #gradeBtn { position: fixed; left: 50%; transform: translateX(-50%); bottom: 20px;
     background: var(--accent); color: #fff; border: none; border-radius: 999px;
     font-size: 16px; font-weight: 700; padding: 14px 42px; cursor: pointer;
-    box-shadow: 0 4px 14px rgba(0,0,0,.25); font-family: inherit;
-  }
+    box-shadow: 0 4px 14px rgba(0,0,0,.25); font-family: inherit; }
   #gradeBtn:disabled { opacity: .5; }
-  #summary {
-    display: none; background: var(--card); border: 2px solid var(--accent);
-    border-radius: 14px; padding: 18px; margin: 20px 0;
-  }
+  #summary { display: none; background: var(--card); border: 2px solid var(--accent);
+    border-radius: 14px; padding: 18px; margin: 20px 0; }
   #summary h2 { margin: 0 0 8px; font-size: 18px; }
   #summary .score { font-size: 32px; font-weight: 800; color: var(--accent); }
-  #summary .record { margin-top: 12px; font-size: 14px; }
-  #summary .emojis { font-size: 26px; letter-spacing: 4px; margin: 6px 0; }
-  #copyBtn {
-    margin-top: 8px; border: 1px solid var(--accent); color: var(--accent); background: none;
-    border-radius: 8px; padding: 8px 16px; font-size: 14px; cursor: pointer; font-family: inherit;
-  }
+  #summary .gains { margin: 10px 0; font-size: 14.5px; }
+  #summary .levelup { color: var(--xp); font-weight: 800; font-size: 17px; margin: 6px 0; }
+  #summary .drop { background: var(--gold-soft); color: var(--gold); border-radius: 10px;
+    padding: 10px 14px; margin: 10px 0; font-weight: 700; display: none; }
+  #summary .record { margin-top: 10px; font-size: 13px; color: var(--sub); }
+  #copyBtn { margin-top: 8px; border: 1px solid var(--accent); color: var(--accent); background: none;
+    border-radius: 8px; padding: 8px 16px; font-size: 14px; cursor: pointer; font-family: inherit; }
+  @keyframes pop { 0% { transform: scale(.7); opacity: 0; } 60% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+  .result-banner.ok, .result-banner.ng { animation: pop .35s ease; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>☀️ 社労士 朝の5問</h1>
-    <div class="meta" id="dateMeta"></div>
+    <div>
+      <h1>☀️ 社労士 朝の5問</h1>
+      <div class="meta" id="dateMeta"></div>
+    </div>
+    <button id="soundBtn">🔊</button>
   </header>
+  <div id="status"></div>
   <div id="quiz"></div>
   <div id="summary">
-    <h2>採点結果</h2>
+    <h2>⚔️ 戦闘結果</h2>
     <div class="score" id="scoreText"></div>
+    <div class="levelup" id="levelupText" style="display:none"></div>
+    <div class="gains" id="gainsText"></div>
+    <div class="drop" id="dropBox"></div>
     <div class="record" id="recordGuide"></div>
     <button id="copyBtn">結果テキストをコピー</button>
   </div>
@@ -129,6 +148,10 @@ const QUIZ = {
       "ref": {
         "label": "労災法7条",
         "url": "https://laws.e-gov.go.jp/law/322AC0000000050"
+      },
+      "monster": {
+        "name": "ツウキンワイバーン",
+        "emoji": "🐉"
       }
     },
     {
@@ -148,6 +171,10 @@ const QUIZ = {
       "ref": {
         "label": "雇用法4条",
         "url": "https://laws.e-gov.go.jp/law/349AC0000000116"
+      },
+      "monster": {
+        "name": "シツギョウゴーレム",
+        "emoji": "🗿"
       }
     },
     {
@@ -167,6 +194,10 @@ const QUIZ = {
       "ref": {
         "label": "徴収法3条・4条",
         "url": "https://laws.e-gov.go.jp/law/344AC0000000084"
+      },
+      "monster": {
+        "name": "チョウシュウリザード",
+        "emoji": "🦎"
       }
     },
     {
@@ -186,6 +217,10 @@ const QUIZ = {
       "ref": {
         "label": "労災法7条",
         "url": "https://laws.e-gov.go.jp/law/322AC0000000050"
+      },
+      "monster": {
+        "name": "キュウフケルベロス",
+        "emoji": "🐺"
       }
     },
     {
@@ -231,26 +266,167 @@ const QUIZ = {
       "ref": {
         "label": "安衛法1条",
         "url": "https://laws.e-gov.go.jp/law/347AC0000000057"
+      },
+      "monster": {
+        "name": "アンエイスフィンクス",
+        "emoji": "🦁"
       }
     }
-  ]
+  ],
+  "game": {
+    "level": 1,
+    "xp": 10,
+    "xp_next": 100,
+    "streak": 1,
+    "stats": [
+      {
+        "subject": "労基",
+        "rank": "C",
+        "note": "0/2"
+      },
+      {
+        "subject": "健保",
+        "rank": "S",
+        "note": "1/1"
+      },
+      {
+        "subject": "国年",
+        "rank": "C",
+        "note": "0/1"
+      },
+      {
+        "subject": "厚年",
+        "rank": "C",
+        "note": "0/1"
+      },
+      {
+        "subject": "労災",
+        "rank": "－",
+        "note": ""
+      },
+      {
+        "subject": "雇用",
+        "rank": "－",
+        "note": ""
+      },
+      {
+        "subject": "徴収",
+        "rank": "－",
+        "note": ""
+      },
+      {
+        "subject": "安衛",
+        "rank": "－",
+        "note": ""
+      }
+    ],
+    "cursed": [
+      {
+        "item": "解雇予告の剣",
+        "subject": "労基"
+      },
+      {
+        "item": "年金の兜",
+        "subject": "国年"
+      },
+      {
+        "item": "厚生の鎧",
+        "subject": "厚年"
+      },
+      {
+        "item": "労働条件の杖",
+        "subject": "労基"
+      }
+    ],
+    "drop_on_perfect": {
+      "emoji": "🥾",
+      "name": "安全靴グリーヴ"
+    }
+  }
 };
 const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbzm7QZ9RGFKspuD9fZQQ7B8pTYpcNK_XGm-r8gm9O4-Ee97hhRfvy2Ew-JJK9CkNmXeYg/exec"; // GAS Webアプリ。空文字なら自動送信をスキップ
 
 const NUM_EMOJI = ["1️⃣","2️⃣","3️⃣","4️⃣","5️⃣"];
 const CIRCLED = "①②③④⑤⑥⑦⑧⑨⑩";
 const SAVE_KEY = "sharoushi-quiz-" + QUIZ.date;
+const SOUND_KEY = "sharoushi-quiz-sound";
 let state = {};
 let graded = false;
+let soundOn = localStorage.getItem(SOUND_KEY) !== "off";
 
 document.getElementById('dateMeta').textContent =
-  `${QUIZ.date}（${QUIZ.weekday}）｜ 回答は自動保存されます（途中で閉じてもOK）`;
+  `${QUIZ.date}（${QUIZ.weekday}）｜ 自動保存対応`;
 
+// ---- サウンド(すべて端末内で合成するオリジナル音。外部音源なし) ----
+let audioCtx = null;
+function ctx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function tone(freq, start, dur, type, vol) {
+  const c = ctx();
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = type || 'square'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0, c.currentTime + start);
+  g.gain.linearRampToValueAtTime(vol || 0.12, c.currentTime + start + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + start + dur);
+  o.connect(g); g.connect(c.destination);
+  o.start(c.currentTime + start); o.stop(c.currentTime + start + dur + 0.05);
+}
+function sfxCorrect() { if (!soundOn) return; tone(880, 0, .09, 'square', .08); tone(1318.5, .09, .18, 'square', .08); }
+function sfxWrong() { if (!soundOn) return; tone(196, 0, .22, 'sawtooth', .09); tone(147, .18, .3, 'sawtooth', .08); }
+function sfxFanfare() { // オリジナルの勝利ジングル(上昇アルペジオ→和音)
+  if (!soundOn) return;
+  const seq = [[523.25,0,.13],[659.25,.13,.13],[783.99,.26,.13],[1046.5,.39,.32]];
+  seq.forEach(n => tone(n[0], n[1], n[2], 'square', .1));
+  [659.25,783.99,1318.5].forEach(f => tone(f, .78, .65, 'triangle', .07));
+}
+function sfxLevelUp() { if (!soundOn) return; [523.25,587.33,659.25,783.99,880,1046.5].forEach((f,i)=>tone(f,i*.07,.12,'triangle',.09)); }
+const soundBtn = document.getElementById('soundBtn');
+soundBtn.textContent = soundOn ? '🔊' : '🔇';
+soundBtn.addEventListener('click', () => {
+  soundOn = !soundOn;
+  localStorage.setItem(SOUND_KEY, soundOn ? 'on' : 'off');
+  soundBtn.textContent = soundOn ? '🔊' : '🔇';
+  if (soundOn) sfxCorrect();
+});
+
+// ---- ステータス表示 ----
+const G = QUIZ.game || null;
+function xpThreshold(level) { return 100 * level; } // Lv n → n+1
+function renderStatus(bonusXp, leveledTo) {
+  if (!G) { document.getElementById('status').style.display = 'none'; return; }
+  const el = document.getElementById('status');
+  const xpNow = G.xp + (bonusXp || 0);
+  let lv = leveledTo || G.level;
+  const need = xpThreshold(lv);
+  const prevSum = (function(){ let s=0; for(let i=1;i<lv;i++) s+=xpThreshold(i); return s; })();
+  const inLv = Math.max(0, xpNow - prevSum);
+  const pct = Math.min(100, Math.round(inLv / need * 100));
+  let html = `<div class="toprow"><span class="lv">⚔️ Lv.${lv}</span><span class="streak">🔥 ${G.streak}日連続</span></div>`;
+  html += `<div class="xpbar"><div class="fill" style="width:${pct}%"></div></div>`;
+  html += `<div class="xptext">XP ${inLv} / ${need}${bonusXp ? `（今日 +${bonusXp}）` : ''}</div>`;
+  if (G.stats && G.stats.length) {
+    html += `<div class="statchips">` + G.stats.map(s =>
+      `<span class="statchip"><b>${s.subject}</b> ${s.rank}${s.note ? ` ${s.note}` : ''}</span>`).join('') + `</div>`;
+  }
+  if (G.cursed && G.cursed.length) {
+    html += `<div class="cursedbox">🟣 呪われた装備: ${G.cursed.map(c=>c.item).join('、')}<br>→ 🔁復習問題に正解すると解呪できる！</div>`;
+  }
+  el.innerHTML = html;
+}
+renderStatus(0);
+
+// ---- 問題描画 ----
 const quizEl = document.getElementById('quiz');
 QUIZ.questions.forEach(q => {
   const card = document.createElement('div');
   card.className = 'q'; card.id = 'q' + q.no;
-  let inner = `<span class="tag">問${q.no}｜${q.subject}${q.type==='fill'?'（選択式）':'（択一式）'}</span>`;
+  let inner = `<span class="tag">問${q.no}｜${q.subject}${q.type==='fill'?'（選択式）':'（択一式）'}${q.uncurse?'　🔁復習':''}</span>`;
+  if (q.monster) {
+    inner += `<div class="monster">${q.monster.emoji} <span class="mname">${q.monster.name}</span> が現れた！${q.uncurse ? `（倒すと「${q.uncurse}」を解呪）` : ''}</div>`;
+  }
   inner += `<div class="qtext">${q.text}</div>`;
   if (q.type === 'single') {
     q.choices.forEach((c, i) => {
@@ -274,11 +450,8 @@ QUIZ.questions.forEach(q => {
 });
 
 function saveState() {
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify({ state, graded }));
-  } catch (e) { /* private mode等では保存不可だが動作は継続 */ }
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({ state, graded })); } catch (e) {}
 }
-
 function applySelections() {
   QUIZ.questions.forEach(q => {
     if (q.type === 'single') {
@@ -324,7 +497,7 @@ function allAnswered() {
 function updateBtn() {
   const b = document.getElementById('gradeBtn');
   b.disabled = !allAnswered();
-  b.textContent = allAnswered() ? '採点する' : '採点する（未回答あり）';
+  b.textContent = allAnswered() ? '⚔️ 採点する' : '採点する（未回答あり）';
 }
 
 function questionContext(q) {
@@ -340,19 +513,18 @@ function questionContext(q) {
   lines.push(``, `【解説】`, q.explanation, ``, `【根拠】${q.ref.label} ${q.ref.url}`, ``, `私の質問: `);
   return lines.join('\n');
 }
-
 function askClaude(qno) {
   const q = QUIZ.questions.find(x => x.no === qno);
-  const ctx = questionContext(q);
-  const url = 'https://claude.ai/new?q=' + encodeURIComponent(ctx);
-  // クリップボードにも入れておく(プリフィルが効かない環境向けの保険)
-  if (navigator.clipboard) navigator.clipboard.writeText(ctx).catch(()=>{});
-  window.open(url, '_blank');
+  const ctx2 = questionContext(q);
+  if (navigator.clipboard) navigator.clipboard.writeText(ctx2).catch(()=>{});
+  window.open('https://claude.ai/new?q=' + encodeURIComponent(ctx2), '_blank');
 }
 
 function doGrade(fromRestore) {
   graded = true;
   const results = [];
+  let gainedXp = 0;
+  const uncursed = [];
   QUIZ.questions.forEach(q => {
     let ok;
     if (q.type === 'single') {
@@ -374,8 +546,18 @@ function doGrade(fromRestore) {
     }
     results.push(ok);
     const banner = document.getElementById('banner' + q.no);
-    banner.textContent = ok ? '⭕ 正解！' : '❌ 不正解';
-    banner.className = 'result-banner ' + (ok ? 'ok' : 'ng');
+    const mname = q.monster ? q.monster.name : `問${q.no}`;
+    const memoji = q.monster ? q.monster.emoji : '';
+    if (ok) {
+      const xp = q.uncurse ? 15 : 10;
+      gainedXp += xp;
+      if (q.uncurse) uncursed.push(q.uncurse);
+      banner.textContent = `⚔️ ${memoji}${mname}を撃破！ +${xp}XP` + (q.uncurse ? `　🔓「${q.uncurse}」を解呪した！` : '');
+      banner.className = 'result-banner ok';
+    } else {
+      banner.textContent = `💥 ${memoji}${mname}の攻撃！ 装備が呪われてしまった…（明日の🔁復習で解呪しよう）`;
+      banner.className = 'result-banner ng';
+    }
     const ex = document.getElementById('expl' + q.no);
     ex.style.display = 'block';
     ex.innerHTML = `<div style="white-space:pre-wrap">${q.explanation}</div>` +
@@ -384,25 +566,57 @@ function doGrade(fromRestore) {
   });
   const score = results.filter(Boolean).length;
   const wrong = results.map((r, i) => r ? null : i + 1).filter(Boolean);
+  const perfect = wrong.length === 0;
+  if (perfect) gainedXp += 25;
+
+  // 効果音(復元時は鳴らさない)
+  if (!fromRestore) {
+    if (perfect) sfxFanfare();
+    else if (score >= 3) sfxCorrect();
+    else sfxWrong();
+  }
+
+  // レベルアップ判定(暫定表示。正本は翌朝cronが同じ式で更新)
+  let lvUpTo = null;
+  if (G) {
+    let lv = G.level, xp = G.xp + gainedXp;
+    let sum = 0; for (let i = 1; i < lv; i++) sum += xpThreshold(i);
+    while (xp - sum >= xpThreshold(lv)) { sum += xpThreshold(lv); lv++; }
+    if (lv > G.level) lvUpTo = lv;
+    renderStatus(gainedXp, lvUpTo || G.level);
+  }
+
   document.getElementById('scoreText').textContent = `${score} / 5`;
-  const guide = document.getElementById('recordGuide');
+  const gains = [`⚡ 獲得XP: +${gainedXp}` + (perfect ? '（全問正解ボーナス +25 含む）' : '')];
+  if (uncursed.length) gains.push(`🔓 解呪: ${uncursed.join('、')}`);
+  document.getElementById('gainsText').innerHTML = gains.join('<br>');
+  if (lvUpTo) {
+    const lu = document.getElementById('levelupText');
+    lu.style.display = 'block';
+    lu.textContent = `🎉 レベルアップ！ Lv.${G.level} → Lv.${lvUpTo}`;
+    if (!fromRestore) setTimeout(sfxLevelUp, perfect ? 1600 : 500);
+  }
+  if (perfect && G && G.drop_on_perfect) {
+    const d = document.getElementById('dropBox');
+    d.style.display = 'block';
+    d.textContent = `🎁 ${G.drop_on_perfect.emoji} 「${G.drop_on_perfect.name}」を手に入れた！`;
+  }
+
   const sent = SUBMIT_URL && !SUBMIT_URL.startsWith('__');
   if (sent && !fromRestore) {
-    // 記録を自動送信(fire-and-forget。text/plainでpreflight回避)
     try {
       fetch(SUBMIT_URL, {
         method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ date: QUIZ.date, score: score, wrong: wrong })
       });
-    } catch (e) { /* 送信失敗時はリアクションで代替 */ }
+    } catch (e) {}
   }
+  const guide = document.getElementById('recordGuide');
   if (sent) {
-    guide.innerHTML = `📡 結果は自動送信されました。翌朝そのまま記録されます。<br><span class="memo">（予備: もし記録されていなかったら、間違えた問題の絵文字 ${wrong.length ? wrong.map(n => NUM_EMOJI[n-1]).join(' ') : '✅'} をSlack投稿にリアクション）</span>`;
-  } else if (wrong.length === 0) {
-    guide.innerHTML = `🎉 全問正解！<br>記録のため、Slackの今日の投稿に <span class="emojis">✅</span> をリアクションしてください。`;
+    guide.innerHTML = `📡 結果は自動送信されました。翌朝ステータスに反映されます。<br><span class="memo">（予備: 記録されていなかったら ${wrong.length ? wrong.map(n => NUM_EMOJI[n-1]).join(' ') : '✅'} をSlack投稿にリアクション）</span>`;
   } else {
-    guide.innerHTML = `記録のため、Slackの今日の投稿に間違えた問題の絵文字をリアクションしてください：<div class="emojis">${wrong.map(n => NUM_EMOJI[n-1]).join(' ')}</div><span class="memo">（リアクションだけで翌朝自動的に採点・弱点記録されます）</span>`;
+    guide.innerHTML = `記録のため、Slackの今日の投稿に ${wrong.length ? '間違えた問題の絵文字 ' + wrong.map(n => NUM_EMOJI[n-1]).join(' ') : '✅'} をリアクションしてください。`;
   }
   const resultText = `今日の結果 ${results.map((r, i) => `${i+1}${r ? '○' : '×'}`).join(' ')}`;
   document.getElementById('copyBtn').addEventListener('click', () => {
@@ -423,7 +637,6 @@ document.getElementById('gradeBtn').addEventListener('click', () => {
   doGrade(false);
 });
 
-// 保存済みの回答を復元
 (function restore() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
@@ -434,7 +647,7 @@ document.getElementById('gradeBtn').addEventListener('click', () => {
       applySelections();
       if (d.graded) doGrade(true);
     }
-  } catch (e) { /* 復元失敗時は新規回答として続行 */ }
+  } catch (e) {}
   updateBtn();
 })();
 </script>
