@@ -62,6 +62,10 @@
   .expl { display: none; margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 12px; font-size: 14px; }
   .expl .ref a { color: var(--accent); word-break: break-all; }
   .memo { color: var(--sub); font-size: 13px; }
+  .askBtn {
+    margin-top: 10px; border: 1px solid var(--accent); color: var(--accent); background: none;
+    border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; font-family: inherit;
+  }
   #gradeBtn {
     position: fixed; left: 50%; transform: translateX(-50%); bottom: 20px;
     background: var(--accent); color: #fff; border: none; border-radius: 999px;
@@ -176,8 +180,13 @@ const QUIZ = {
 };
 
 const NUM_EMOJI = ["1️⃣","2️⃣","3️⃣","4️⃣","5️⃣"];
-const state = {};
-document.getElementById('dateMeta').textContent = `${QUIZ.date}（${QUIZ.weekday}）｜ 解き終わったら下の「採点する」をタップ`;
+const CIRCLED = "①②③④⑤⑥⑦⑧⑨⑩";
+const SAVE_KEY = "sharoushi-quiz-" + QUIZ.date;
+let state = {};
+let graded = false;
+
+document.getElementById('dateMeta').textContent =
+  `${QUIZ.date}（${QUIZ.weekday}）｜ 回答は自動保存されます（途中で閉じてもOK）`;
 
 const quizEl = document.getElementById('quiz');
 QUIZ.questions.forEach(q => {
@@ -194,7 +203,7 @@ QUIZ.questions.forEach(q => {
     q.blanks.forEach((b, bi) => {
       inner += `<div class="blank-group"><div class="blabel">【 ${b.label} 】</div><div class="opts">`;
       q.options.forEach((o, oi) => {
-        inner += `<button class="opt" data-q="${q.no}" data-b="${bi}" data-i="${oi}">${'①②③④⑤⑥⑦⑧⑨⑩'[oi]}${o}</button>`;
+        inner += `<button class="opt" data-q="${q.no}" data-b="${bi}" data-i="${oi}">${CIRCLED[oi]}${o}</button>`;
       });
       inner += `</div></div>`;
     });
@@ -206,11 +215,35 @@ QUIZ.questions.forEach(q => {
   state[q.no] = q.type === 'single' ? null : new Array(q.blanks.length).fill(null);
 });
 
-let graded = false;
+function saveState() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ state, graded }));
+  } catch (e) { /* private mode等では保存不可だが動作は継続 */ }
+}
+
+function applySelections() {
+  QUIZ.questions.forEach(q => {
+    if (q.type === 'single') {
+      if (state[q.no] !== null) {
+        const el = document.querySelector(`.choice[data-q="${q.no}"][data-i="${state[q.no]}"]`);
+        if (el) el.classList.add('sel');
+      }
+    } else {
+      state[q.no].forEach((v, bi) => {
+        if (v !== null) {
+          const el = document.querySelector(`.opt[data-q="${q.no}"][data-b="${bi}"][data-i="${v}"]`);
+          if (el) el.classList.add('sel');
+        }
+      });
+    }
+  });
+}
+
 quizEl.addEventListener('click', e => {
-  if (graded) return;
   const btn = e.target.closest('button');
   if (!btn) return;
+  if (btn.classList.contains('askBtn')) { askClaude(parseInt(btn.dataset.q)); return; }
+  if (graded) return;
   const qno = parseInt(btn.dataset.q);
   if (btn.classList.contains('choice')) {
     document.querySelectorAll(`.choice[data-q="${qno}"]`).forEach(el => el.classList.remove('sel'));
@@ -222,6 +255,7 @@ quizEl.addEventListener('click', e => {
     btn.classList.add('sel');
     state[qno][bi] = parseInt(btn.dataset.i);
   }
+  saveState();
   updateBtn();
 });
 
@@ -234,10 +268,31 @@ function updateBtn() {
   b.disabled = !allAnswered();
   b.textContent = allAnswered() ? '採点する' : '採点する（未回答あり）';
 }
-updateBtn();
 
-document.getElementById('gradeBtn').addEventListener('click', () => {
-  if (graded || !allAnswered()) return;
+function questionContext(q) {
+  let lines = [`社労士試験の学習中です。以下の問題について質問があります。`, ``, `【問題】問${q.no}（${q.subject}）`, q.text, ``];
+  if (q.type === 'single') {
+    lines.push(`【選択肢】`);
+    q.choices.forEach((c, i) => lines.push(`${String.fromCharCode(65+i)}. ${c}`));
+    lines.push(``, `【正解】${String.fromCharCode(65 + q.answer)}`);
+  } else {
+    lines.push(`【語群】` + q.options.map((o,i)=>`${CIRCLED[i]}${o}`).join(' '));
+    lines.push(`【正解】` + q.blanks.map((b)=>`${b.label}=${CIRCLED[b.answer]}${q.options[b.answer]}`).join(' '));
+  }
+  lines.push(``, `【解説】`, q.explanation, ``, `【根拠】${q.ref.label} ${q.ref.url}`, ``, `私の質問: `);
+  return lines.join('\n');
+}
+
+function askClaude(qno) {
+  const q = QUIZ.questions.find(x => x.no === qno);
+  const ctx = questionContext(q);
+  const url = 'https://claude.ai/new?q=' + encodeURIComponent(ctx);
+  // クリップボードにも入れておく(プリフィルが効かない環境向けの保険)
+  if (navigator.clipboard) navigator.clipboard.writeText(ctx).catch(()=>{});
+  window.open(url, '_blank');
+}
+
+function doGrade(fromRestore) {
   graded = true;
   const results = [];
   QUIZ.questions.forEach(q => {
@@ -265,7 +320,9 @@ document.getElementById('gradeBtn').addEventListener('click', () => {
     banner.className = 'result-banner ' + (ok ? 'ok' : 'ng');
     const ex = document.getElementById('expl' + q.no);
     ex.style.display = 'block';
-    ex.innerHTML = `<div style="white-space:pre-wrap">${q.explanation}</div><div class="ref">根拠：<a href="${q.ref.url}" target="_blank" rel="noopener">${q.ref.label}</a></div>`;
+    ex.innerHTML = `<div style="white-space:pre-wrap">${q.explanation}</div>` +
+      `<div class="ref">根拠：<a href="${q.ref.url}" target="_blank" rel="noopener">${q.ref.label}</a></div>` +
+      `<button class="askBtn" data-q="${q.no}">🙋 この問題についてClaudeに質問する</button>`;
   });
   const score = results.filter(Boolean).length;
   const wrong = results.map((r, i) => r ? null : i + 1).filter(Boolean);
@@ -284,8 +341,31 @@ document.getElementById('gradeBtn').addEventListener('click', () => {
   });
   document.getElementById('summary').style.display = 'block';
   document.getElementById('gradeBtn').style.display = 'none';
-  document.getElementById('summary').scrollIntoView({ behavior: 'smooth' });
+  if (!fromRestore) {
+    saveState();
+    document.getElementById('summary').scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+document.getElementById('gradeBtn').addEventListener('click', () => {
+  if (graded || !allAnswered()) return;
+  doGrade(false);
 });
+
+// 保存済みの回答を復元
+(function restore() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) { updateBtn(); return; }
+    const d = JSON.parse(raw);
+    if (d && d.state) {
+      Object.keys(d.state).forEach(k => { state[k] = d.state[k]; });
+      applySelections();
+      if (d.graded) doGrade(true);
+    }
+  } catch (e) { /* 復元失敗時は新規回答として続行 */ }
+  updateBtn();
+})();
 </script>
 </body>
 </html>
