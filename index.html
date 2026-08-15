@@ -178,6 +178,7 @@ const QUIZ = {
     }
   ]
 };
+const SUBMIT_URL = "https://script.google.com/macros/s/AKfycbzm7QZ9RGFKspuD9fZQQ7B8pTYpcNK_XGm-r8gm9O4-Ee97hhRfvy2Ew-JJK9CkNmXeYg/exec"; // GAS Webアプリ。空文字なら自動送信をスキップ
 
 const NUM_EMOJI = ["1️⃣","2️⃣","3️⃣","4️⃣","5️⃣"];
 const CIRCLED = "①②③④⑤⑥⑦⑧⑨⑩";
@@ -328,7 +329,20 @@ function doGrade(fromRestore) {
   const wrong = results.map((r, i) => r ? null : i + 1).filter(Boolean);
   document.getElementById('scoreText').textContent = `${score} / 5`;
   const guide = document.getElementById('recordGuide');
-  if (wrong.length === 0) {
+  const sent = SUBMIT_URL && !SUBMIT_URL.startsWith('__');
+  if (sent && !fromRestore) {
+    // 記録を自動送信(fire-and-forget。text/plainでpreflight回避)
+    try {
+      fetch(SUBMIT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ date: QUIZ.date, score: score, wrong: wrong })
+      });
+    } catch (e) { /* 送信失敗時はリアクションで代替 */ }
+  }
+  if (sent) {
+    guide.innerHTML = `📡 結果は自動送信されました。翌朝そのまま記録されます。<br><span class="memo">（予備: もし記録されていなかったら、間違えた問題の絵文字 ${wrong.length ? wrong.map(n => NUM_EMOJI[n-1]).join(' ') : '✅'} をSlack投稿にリアクション）</span>`;
+  } else if (wrong.length === 0) {
     guide.innerHTML = `🎉 全問正解！<br>記録のため、Slackの今日の投稿に <span class="emojis">✅</span> をリアクションしてください。`;
   } else {
     guide.innerHTML = `記録のため、Slackの今日の投稿に間違えた問題の絵文字をリアクションしてください：<div class="emojis">${wrong.map(n => NUM_EMOJI[n-1]).join(' ')}</div><span class="memo">（リアクションだけで翌朝自動的に採点・弱点記録されます）</span>`;
