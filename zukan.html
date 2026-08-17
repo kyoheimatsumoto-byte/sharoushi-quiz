@@ -43,18 +43,24 @@
   .topic { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
     padding: 12px 14px; margin-bottom: 8px; }
   .topic.locked { background: var(--lock-soft); border-style: dashed; }
-  .trow { display: flex; align-items: center; gap: 8px; }
+  .topic.stale { opacity: .55; }
+  .trow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .badge { font-size: 12px; font-weight: 800; border-radius: 999px; padding: 1px 9px; flex-shrink: 0; }
   .badge.S, .badge.A { background: var(--ok-soft); color: var(--ok); }
   .badge.B { background: var(--mid-soft); color: var(--mid); }
   .badge.C { background: var(--ng-soft); color: var(--ng); }
   .badge.lock { background: var(--lock-soft); color: var(--lock); }
+  .moon { font-size: 13px; flex-shrink: 0; }
+  .lowsample { font-size: 11px; color: var(--sub); border: 1px solid var(--border); border-radius: 999px; padding: 0 7px; }
   .tname { font-weight: 700; font-size: 14.5px; }
   .locked .tname { color: var(--lock); }
   .note { font-size: 13.5px; color: var(--sub); margin-top: 6px; }
+  .stale-warn { font-size: 12.5px; color: var(--mid); margin-top: 6px; font-weight: 700; }
   .ref { font-size: 12px; margin-top: 6px; }
   .ref a { color: var(--accent); }
   .unknown-mark { font-size: 13.5px; color: var(--lock); margin-top: 4px; }
+  .legend { font-size: 12px; color: var(--sub); background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px 12px; margin-bottom: 16px; }
 </style>
 </head>
 <body>
@@ -65,6 +71,7 @@
   </header>
   <a class="backlink" href="index.html">← 今日のクエストへ戻る</a>
   <div class="overall" id="overall"></div>
+  <div class="legend">🌕鮮度=直近14日以内に挑戦　🌗鮮度=15〜45日前　🌑鮮度=46日以上前（ランクが高くても記憶が薄れている可能性）　🔍=まだ判定回数が少ない仮ランク</div>
   <div id="subjects"></div>
 </div>
 <script>
@@ -78,6 +85,8 @@ const ZUKAN = {
           "name": "総則・労働条件の原則",
           "status": "cleared",
           "rank": "C",
+          "low_sample": true,
+          "freshness": "fresh",
           "note": "労働条件は「人たるに値する生活」を営む必要を満たすべき最低基準。低下させず、その向上を図るよう努める。",
           "ref": {
             "label": "労基法1条",
@@ -108,6 +117,8 @@ const ZUKAN = {
           "name": "解雇・退職",
           "status": "cleared",
           "rank": "B",
+          "low_sample": true,
+          "freshness": "fresh",
           "note": "解雇予告は原則30日前、または30日分以上の平均賃金。1日分支払うごとに1日短縮できる。",
           "ref": {
             "label": "労基法20条",
@@ -148,6 +159,8 @@ const ZUKAN = {
           "name": "総則・適用",
           "status": "cleared",
           "rank": "C",
+          "low_sample": true,
+          "freshness": "fresh",
           "note": "業務災害・複数業務要因災害・通勤災害等の迅速公正な保護と、被災労働者の社会復帰援護等による福祉の増進が目的。",
           "ref": {
             "label": "労災法1条",
@@ -291,6 +304,8 @@ const ZUKAN = {
           "name": "被保険者・被扶養者",
           "status": "cleared",
           "rank": "S",
+          "low_sample": true,
+          "freshness": "fresh",
           "note": "被保険者は「適用事業所に使用されるに至った日」に資格を取得する（届出日や確認日ではない）。",
           "ref": {
             "label": "健保法35条",
@@ -301,6 +316,8 @@ const ZUKAN = {
           "name": "標準報酬",
           "status": "cleared",
           "rank": "S",
+          "low_sample": true,
+          "freshness": "fresh",
           "note": "資格取得時の標準報酬月額は、資格取得日の報酬額を期間の総日数で除した額の30倍などで決定する。",
           "ref": {
             "label": "健保法42条",
@@ -328,6 +345,8 @@ const ZUKAN = {
           "name": "総則・被保険者",
           "status": "cleared",
           "rank": "C",
+          "low_sample": true,
+          "freshness": "fresh",
           "note": "第1号=国内住所20〜60歳、第2号=厚年被保険者、第3号=被扶養配偶者20〜60歳。いずれも国籍要件はない。",
           "ref": {
             "label": "国年法7条",
@@ -338,6 +357,8 @@ const ZUKAN = {
           "name": "老齢基礎年金",
           "status": "cleared",
           "rank": "S",
+          "low_sample": true,
+          "freshness": "fresh",
           "note": "受給資格期間は保険料納付済期間＋免除期間が10年以上（平成29年8月改正で25年→10年に短縮）。",
           "ref": {
             "label": "国年法26条",
@@ -369,6 +390,8 @@ const ZUKAN = {
           "name": "総則・被保険者",
           "status": "cleared",
           "rank": "B",
+          "low_sample": true,
+          "freshness": "fresh",
           "note": "適用事業所に使用される70歳未満の者が被保険者（年齢の下限なし）。70歳以上でも要件を満たせば高齢任意加入できる。",
           "ref": {
             "label": "厚年法9条・4条の3",
@@ -421,9 +444,17 @@ ZUKAN.subjects.forEach(s => {
   let html = `<h2>${s.name} <span class="sub-pct">${cleared}/${s.topics.length}</span></h2>`;
   s.topics.forEach(t => {
     if (t.status === 'cleared') {
-      html += `<div class="topic">
-        <div class="trow"><span class="badge ${t.rank}">${t.rank}</span><span class="tname">${t.name}</span></div>
+      const moon = t.freshness === 'fresh' ? '🌕' : t.freshness === 'fading' ? '🌗' : '🌑';
+      const isStale = t.freshness === 'stale';
+      html += `<div class="topic${isStale ? ' stale' : ''}">
+        <div class="trow">
+          <span class="badge ${t.rank}">${t.rank}</span>
+          <span class="moon" title="記憶の鮮度">${moon}</span>
+          ${t.low_sample ? `<span class="lowsample">🔍 判定回数少</span>` : ''}
+          <span class="tname">${t.name}</span>
+        </div>
         <div class="note">${t.note || ''}</div>
+        ${isStale ? `<div class="stale-warn">⚠️ しばらく触れていません。記憶が薄れているかも</div>` : ''}
         ${t.ref ? `<div class="ref">根拠：<a href="${t.ref.url}" target="_blank" rel="noopener">${t.ref.label}</a></div>` : ''}
       </div>`;
     } else {
