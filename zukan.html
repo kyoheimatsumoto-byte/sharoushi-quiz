@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>社労士 体系図鑑</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1e3a5f">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1a1d21; --sub: #616770;
+    --accent: #2563eb; --accent-soft: #dbeafe; --border: #e3e6ea;
+    --ok: #16a34a; --ok-soft: #dcfce7; --mid: #ca8a04; --mid-soft: #fef9c3;
+    --ng: #dc2626; --ng-soft: #fee2e2; --lock: #9aa2ab; --lock-soft: #eceef0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171a; --card: #1f2226; --text: #e8eaed; --sub: #9aa2ab;
+      --accent: #60a5fa; --accent-soft: #1e3a5f; --border: #33373d;
+      --ok: #4ade80; --ok-soft: #14331f; --mid: #eab308; --mid-soft: #3a2e10;
+      --ng: #f87171; --ng-soft: #3b1a1a; --lock: #5c636b; --lock-soft: #24272b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    line-height: 1.7; padding: 16px 12px 40px; }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  header { margin: 8px 4px 6px; }
+  header h1 { font-size: 20px; margin: 0 0 4px; }
+  header .meta { color: var(--sub); font-size: 13px; }
+  .backlink { display: inline-block; margin: 6px 4px 16px; color: var(--accent); text-decoration: none; font-size: 14px; }
+  .overall { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 18px; }
+  .overall .pct { font-size: 26px; font-weight: 800; color: var(--accent); }
+  .obar { background: var(--lock-soft); border-radius: 999px; height: 10px; margin: 6px 0; overflow: hidden; }
+  .obar .fill { background: var(--accent); height: 100%; }
+  .subject { margin-bottom: 22px; }
+  .subject h2 { font-size: 16px; margin: 0 0 8px; display: flex; align-items: center; gap: 8px; }
+  .subject .sub-pct { font-size: 12px; color: var(--sub); font-weight: 400; }
+  .topic { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 14px; margin-bottom: 8px; }
+  .topic.locked { background: var(--lock-soft); border-style: dashed; }
+  .trow { display: flex; align-items: center; gap: 8px; }
+  .badge { font-size: 12px; font-weight: 800; border-radius: 999px; padding: 1px 9px; flex-shrink: 0; }
+  .badge.S, .badge.A { background: var(--ok-soft); color: var(--ok); }
+  .badge.B { background: var(--mid-soft); color: var(--mid); }
+  .badge.C { background: var(--ng-soft); color: var(--ng); }
+  .badge.lock { background: var(--lock-soft); color: var(--lock); }
+  .tname { font-weight: 700; font-size: 14.5px; }
+  .locked .tname { color: var(--lock); }
+  .note { font-size: 13.5px; color: var(--sub); margin-top: 6px; }
+  .ref { font-size: 12px; margin-top: 6px; }
+  .ref a { color: var(--accent); }
+  .unknown-mark { font-size: 13.5px; color: var(--lock); margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📖 社労士 体系図鑑</h1>
+    <div class="meta" id="dateMeta"></div>
+  </header>
+  <a class="backlink" href="index.html">← 今日のクエストへ戻る</a>
+  <div class="overall" id="overall"></div>
+  <div id="subjects"></div>
+</div>
+<script>
+const ZUKAN = {
+  "updated": "2026-08-17",
+  "subjects": [
+    {
+      "name": "労基",
+      "topics": [
+        {
+          "name": "総則・労働条件の原則",
+          "status": "cleared",
+          "rank": "C",
+          "note": "労働条件は「人たるに値する生活」を営む必要を満たすべき最低基準。低下させず、その向上を図るよう努める。",
+          "ref": {
+            "label": "労基法1条",
+            "url": "https://laws.e-gov.go.jp/law/322AC0000000049"
+          }
+        },
+        {
+          "name": "労働契約",
+          "status": "unknown"
+        },
+        {
+          "name": "賃金",
+          "status": "unknown"
+        },
+        {
+          "name": "労働時間・休憩・休日",
+          "status": "unknown"
+        },
+        {
+          "name": "年次有給休暇",
+          "status": "unknown"
+        },
+        {
+          "name": "年少者・妊産婦",
+          "status": "unknown"
+        },
+        {
+          "name": "解雇・退職",
+          "status": "cleared",
+          "rank": "B",
+          "note": "解雇予告は原則30日前、または30日分以上の平均賃金。1日分支払うごとに1日短縮できる。",
+          "ref": {
+            "label": "労基法20条",
+            "url": "https://laws.e-gov.go.jp/law/322AC0000000049"
+          }
+        },
+        {
+          "name": "就業規則・監督機関",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "安衛",
+      "topics": [
+        {
+          "name": "総則・安全衛生管理体制",
+          "status": "unknown"
+        },
+        {
+          "name": "危険防止措置・機械等規制",
+          "status": "unknown"
+        },
+        {
+          "name": "健康診断・面接指導",
+          "status": "unknown"
+        },
+        {
+          "name": "監督・雑則",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "労災",
+      "topics": [
+        {
+          "name": "総則・適用",
+          "status": "cleared",
+          "rank": "C",
+          "note": "業務災害・複数業務要因災害・通勤災害等の迅速公正な保護と、被災労働者の社会復帰援護等による福祉の増進が目的。",
+          "ref": {
+            "label": "労災法1条",
+            "url": "https://laws.e-gov.go.jp/law/322AC0000000050"
+          }
+        },
+        {
+          "name": "業務災害の認定",
+          "status": "unknown"
+        },
+        {
+          "name": "通勤災害",
+          "status": "unknown"
+        },
+        {
+          "name": "給付の種類と内容",
+          "status": "unknown"
+        },
+        {
+          "name": "特別支給金・特別加入",
+          "status": "unknown"
+        },
+        {
+          "name": "通則・不服申立て",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "雇用",
+      "topics": [
+        {
+          "name": "総則・適用",
+          "status": "unknown"
+        },
+        {
+          "name": "被保険者",
+          "status": "unknown"
+        },
+        {
+          "name": "基本手当",
+          "status": "unknown"
+        },
+        {
+          "name": "就職促進給付・教育訓練給付",
+          "status": "unknown"
+        },
+        {
+          "name": "雇用継続給付・育児介護休業給付",
+          "status": "unknown"
+        },
+        {
+          "name": "雑則・不服申立て",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "徴収",
+      "topics": [
+        {
+          "name": "総則・保険関係の成立消滅",
+          "status": "unknown"
+        },
+        {
+          "name": "労働保険料の種類と算定",
+          "status": "unknown"
+        },
+        {
+          "name": "申告・納付",
+          "status": "unknown"
+        },
+        {
+          "name": "メリット制",
+          "status": "unknown"
+        },
+        {
+          "name": "労働保険事務組合",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "労一",
+      "topics": [
+        {
+          "name": "労働契約法",
+          "status": "unknown"
+        },
+        {
+          "name": "労働組合法・労働関係調整法",
+          "status": "unknown"
+        },
+        {
+          "name": "各種雇用関連法",
+          "status": "unknown"
+        },
+        {
+          "name": "労働経済・統計",
+          "status": "unknown"
+        },
+        {
+          "name": "労務管理",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "社一",
+      "topics": [
+        {
+          "name": "国民健康保険法",
+          "status": "unknown"
+        },
+        {
+          "name": "高齢者医療確保法",
+          "status": "unknown"
+        },
+        {
+          "name": "介護保険法",
+          "status": "unknown"
+        },
+        {
+          "name": "児童手当・確定拠出年金等",
+          "status": "unknown"
+        },
+        {
+          "name": "社会保険の沿革・統計",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "健保",
+      "topics": [
+        {
+          "name": "総則・保険者",
+          "status": "unknown"
+        },
+        {
+          "name": "被保険者・被扶養者",
+          "status": "cleared",
+          "rank": "S",
+          "note": "被保険者は「適用事業所に使用されるに至った日」に資格を取得する（届出日や確認日ではない）。",
+          "ref": {
+            "label": "健保法35条",
+            "url": "https://laws.e-gov.go.jp/law/211AC0000000070"
+          }
+        },
+        {
+          "name": "標準報酬",
+          "status": "cleared",
+          "rank": "S",
+          "note": "資格取得時の標準報酬月額は、資格取得日の報酬額を期間の総日数で除した額の30倍などで決定する。",
+          "ref": {
+            "label": "健保法42条",
+            "url": "https://laws.e-gov.go.jp/law/211AC0000000070"
+          }
+        },
+        {
+          "name": "保険給付",
+          "status": "unknown"
+        },
+        {
+          "name": "費用の負担",
+          "status": "unknown"
+        },
+        {
+          "name": "日雇特例・雑則",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "国年",
+      "topics": [
+        {
+          "name": "総則・被保険者",
+          "status": "cleared",
+          "rank": "C",
+          "note": "第1号=国内住所20〜60歳、第2号=厚年被保険者、第3号=被扶養配偶者20〜60歳。いずれも国籍要件はない。",
+          "ref": {
+            "label": "国年法7条",
+            "url": "https://laws.e-gov.go.jp/law/334AC0000000141"
+          }
+        },
+        {
+          "name": "老齢基礎年金",
+          "status": "cleared",
+          "rank": "S",
+          "note": "受給資格期間は保険料納付済期間＋免除期間が10年以上（平成29年8月改正で25年→10年に短縮）。",
+          "ref": {
+            "label": "国年法26条",
+            "url": "https://laws.e-gov.go.jp/law/334AC0000000141"
+          }
+        },
+        {
+          "name": "障害基礎年金",
+          "status": "unknown"
+        },
+        {
+          "name": "遺族基礎年金",
+          "status": "unknown"
+        },
+        {
+          "name": "保険料・免除",
+          "status": "unknown"
+        },
+        {
+          "name": "独自給付・雑則",
+          "status": "unknown"
+        }
+      ]
+    },
+    {
+      "name": "厚年",
+      "topics": [
+        {
+          "name": "総則・被保険者",
+          "status": "cleared",
+          "rank": "B",
+          "note": "適用事業所に使用される70歳未満の者が被保険者（年齢の下限なし）。70歳以上でも要件を満たせば高齢任意加入できる。",
+          "ref": {
+            "label": "厚年法9条・4条の3",
+            "url": "https://laws.e-gov.go.jp/law/329AC0000000115"
+          }
+        },
+        {
+          "name": "標準報酬",
+          "status": "unknown"
+        },
+        {
+          "name": "老齢厚生年金",
+          "status": "unknown"
+        },
+        {
+          "name": "障害厚生年金",
+          "status": "unknown"
+        },
+        {
+          "name": "遺族厚生年金",
+          "status": "unknown"
+        },
+        {
+          "name": "保険料・費用負担・雑則",
+          "status": "unknown"
+        }
+      ]
+    }
+  ]
+};
+
+document.getElementById('dateMeta').textContent = `更新日: ${ZUKAN.updated}　｜　学んだ論点を法律の体系順に並べた図鑑です`;
+
+let totalTopics = 0, clearedTopics = 0;
+ZUKAN.subjects.forEach(s => {
+  totalTopics += s.topics.length;
+  clearedTopics += s.topics.filter(t => t.status === 'cleared').length;
+});
+const overallPct = totalTopics ? Math.round(clearedTopics / totalTopics * 100) : 0;
+document.getElementById('overall').innerHTML =
+  `<div class="pct">${clearedTopics} / ${totalTopics} 論点を探索済み（${overallPct}%）</div>` +
+  `<div class="obar"><div class="fill" style="width:${overallPct}%"></div></div>` +
+  `<div style="font-size:13px;color:var(--sub)">❓の論点はまだ未挑戦。毎日の討伐依頼やテキスト読了で埋まっていきます。</div>`;
+
+const container = document.getElementById('subjects');
+ZUKAN.subjects.forEach(s => {
+  const cleared = s.topics.filter(t => t.status === 'cleared').length;
+  const sec = document.createElement('div');
+  sec.className = 'subject';
+  let html = `<h2>${s.name} <span class="sub-pct">${cleared}/${s.topics.length}</span></h2>`;
+  s.topics.forEach(t => {
+    if (t.status === 'cleared') {
+      html += `<div class="topic">
+        <div class="trow"><span class="badge ${t.rank}">${t.rank}</span><span class="tname">${t.name}</span></div>
+        <div class="note">${t.note || ''}</div>
+        ${t.ref ? `<div class="ref">根拠：<a href="${t.ref.url}" target="_blank" rel="noopener">${t.ref.label}</a></div>` : ''}
+      </div>`;
+    } else {
+      html += `<div class="topic locked">
+        <div class="trow"><span class="badge lock">❓</span><span class="tname">${t.name}</span></div>
+        <div class="unknown-mark">まだ探索していない論点</div>
+      </div>`;
+    }
+  });
+  sec.innerHTML = html;
+  container.appendChild(sec);
+});
+</script>
+</body>
+</html>
