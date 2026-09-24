@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>社労士 賢者の書庫</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1e3a5f">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1a1d21; --sub: #616770;
+    --accent: #2563eb; --accent-soft: #dbeafe; --border: #e3e6ea;
+    --gold: #b45309; --gold-soft: #fef3c7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171a; --card: #1f2226; --text: #e8eaed; --sub: #9aa2ab;
+      --accent: #60a5fa; --accent-soft: #1e3a5f; --border: #33373d;
+      --gold: #fbbf24; --gold-soft: #3a2e10;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    line-height: 1.85; padding: 16px 12px 40px; }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  header h1 { font-size: 20px; margin: 8px 4px 4px; }
+  header .meta { color: var(--sub); font-size: 13px; margin: 0 4px 6px; }
+  .backlink { display: inline-block; margin: 6px 4px 16px; color: var(--accent); text-decoration: none; font-size: 14px; }
+  .subject-head { font-size: 15px; font-weight: 800; margin: 20px 4px 8px; color: var(--sub); }
+  details { background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 8px; overflow: hidden; }
+  summary { padding: 12px 14px; cursor: pointer; font-weight: 700; font-size: 14.5px;
+    display: flex; align-items: center; gap: 8px; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary .no { font-size: 11.5px; background: var(--gold-soft); color: var(--gold);
+    border-radius: 999px; padding: 1px 9px; flex-shrink: 0; font-weight: 800; }
+  summary .date { margin-left: auto; font-size: 11.5px; color: var(--sub); font-weight: 400; flex-shrink: 0; }
+  .body { padding: 4px 16px 14px; font-size: 14.5px; border-top: 1px dashed var(--border); }
+  .body h1 { font-size: 16px; }
+  .body h2 { font-size: 14.5px; color: var(--accent); margin: 16px 0 6px; }
+  .body a { color: var(--accent); word-break: break-all; }
+  .empty { color: var(--sub); font-size: 14px; background: var(--card); border: 1px dashed var(--border);
+    border-radius: 12px; padding: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📚 賢者の書庫</h1>
+    <div class="meta" id="meta"></div>
+  </header>
+  <a class="backlink" href="index.html">← 今日のクエストへ</a>
+  <a class="backlink" href="zukan.html">📖 体系図鑑</a>
+  <div id="list"></div>
+</div>
+<script>
+const LIB = {"updated": "2026-09-24", "lessons": [{"no": 1, "subject": "労基", "topic": "総則・労働条件の原則", "date": "", "body": "# 第1回 労働基準法「総則・労働条件の原則」（労基法1〜4条）\n\n## この法律は何のためにあるか\n労働基準法は、働く人の労働条件について国が定めた「最低ライン」のルール集です。会社と労働者が個別に何を約束しようと、このラインを下回る条件は許されません。社労士試験10科目の最初の柱であり、すべての労働法の土台になります。\n\n## 条文の中身（ここが出る）\n**1条1項**：「労働条件は、労働者が人たるに値する生活を営むための必要を充たすべきものでなければならない。」— 憲法25条(生存権)の理念を労働条件に落とし込んだ宣言です。「人たるに値する生活」という言葉は選択式の超頻出ワード。\n\n**1条2項**：この法律の基準は「最低」のもの。だから労働関係の当事者は、①この基準を理由に労働条件を**低下させてはならない**、②その**向上を図るように努め**なければならない。低下禁止は義務、向上は努力義務、という強弱の違いに注意。義務を負う主体は「労働関係の当事者」＝使用者だけでなく労働者側も含む点がひっかけどころ。\n\n**2条**：労働条件は労使が**対等の立場**で決定すべきもの。そして労使は労働協約・就業規則・労働契約を**遵守し、誠実に義務を履行**しなければならない。\n\n**3条(均等待遇)**：使用者は、労働者の**国籍・信条・社会的身分**を理由として、賃金・労働時間その他の労働条件について差別的取扱いをしてはならない。⚠️ この3つは限定列挙で、**「性別」は含まれない**（性別による賃金差別は次の4条、賃金以外の性差別は男女雇用機会均等法の守備範囲）。試験で最も狙われるポイント。\n\n**4条(男女同一賃金)**：使用者は、労働者が**女性であることを理由**として、**賃金について**男性と差別的取扱いをしてはならない。⚠️ 対象は「賃金」だけ。労働時間や配置の性差別は4条違反ではない。\n\n## 覚え方のコツ\n「1条＝理念(人たるに値する)」「2条＝対等・遵守」「3条＝国籍・信条・社会的身分(性別なし)」「4条＝女性×賃金だけ」。3条と4条の守備範囲の違いを言えれば、この論点はほぼ完成です。\n\n## まとめ3行\n- 労基法は労働条件の**最低基準**。低下禁止(義務)＋向上努力(努力義務)、主体は労使双方\n- 3条の差別禁止は**国籍・信条・社会的身分**の3つ限定。性別は入らない\n- 4条は**女性の賃金差別**だけを禁止。賃金以外は均等法の領域\n\n根拠：労基法1〜4条 https://laws.e-gov.go.jp/law/322AC0000000049\n"}]};
+
+document.getElementById('meta').textContent =
+  `毎朝の講義がここに蓄積されます（${LIB.lessons.length}講 収蔵）｜ 更新日: ${LIB.updated}`;
+
+// 簡易Markdown描画(見出し・太字・箇条書きのみ)
+function md(src) {
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return esc(src)
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+    .replace(/^- (.+)$/gm, '・$1')
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
+const listEl = document.getElementById('list');
+if (!LIB.lessons.length) {
+  listEl.innerHTML = '<div class="empty">まだ講義がありません。明日の朝から1日1講ずつ増えていきます。</div>';
+} else {
+  let html = '', lastSubject = null;
+  LIB.lessons.forEach(l => {
+    if (l.subject !== lastSubject) {
+      html += `<div class="subject-head">▼ ${l.subject}</div>`;
+      lastSubject = l.subject;
+    }
+    html += `<details${l.no === LIB.lessons.length ? ' open' : ''}>
+      <summary><span class="no">第${l.no}回</span>${l.topic}<span class="date">${l.date || ''}</span></summary>
+      <div class="body">${md(l.body)}</div>
+    </details>`;
+  });
+  listEl.innerHTML = html;
+}
+</script>
+</body>
+</html>
